@@ -7,7 +7,6 @@ class MailService {
     this.transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
       port: process.env.SMTP_PORT,
-      name: "QuizGrad",
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMPT_PASSWORD,
