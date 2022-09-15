@@ -33,6 +33,12 @@ class UserValidator {
       userValidationRules("newPassword").password,
     ];
   }
+  forgotPassword() {
+    return [userValidationRules().email];
+  }
+  resetPassword() {
+    return [userValidationRules().password];
+  }
 }
 
 export const userValidator = new UserValidator();

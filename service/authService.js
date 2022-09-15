@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import UserDto from "../dto/UserDto.js";
 import User from "../models/User.js";
 import Role from "../models/Role.js";
+import UserPasswords from "../models/UserPasswords.js";
 import ApiError from "../exceptions/ApiError.js";
 import tokenService from "./tokenService.js";
 
@@ -24,6 +25,11 @@ class AuthService {
       role: userRole._id,
     });
     await user.save();
+
+    await UserPasswords.create({
+      userId: user._id,
+      prevPasswords: [user.password],
+    });
 
     const userDto = new UserDto(user);
 

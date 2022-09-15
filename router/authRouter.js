@@ -12,6 +12,7 @@ router.post(
   validationMiddleware,
   authController.registration
 );
+
 router.post("/login", authController.login);
 
 export default router;
