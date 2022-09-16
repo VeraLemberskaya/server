@@ -82,11 +82,11 @@ class UserService {
       });
     }
 
-    const link = `${process.env.API_URL}${process.env.PORT}/api/users/reset-password/${user._id}/${token.token}`;
+    const link = `${process.env.BASE_URL}/users/reset-password/${user._id}/${token.token}`;
 
     await mailService.sendActivationMail(
       user.email,
-      `Reset password on ${process.env.API_URL}${process.env.PORT}`,
+      `Reset password on ${process.env.BASE_URL}`,
       link
     );
 
@@ -102,8 +102,8 @@ class UserService {
     }
 
     const tokenExists = await Token.exists({
-      userId: userId,
-      token: token,
+      userId,
+      token,
     });
 
     if (!tokenExists) {
@@ -113,10 +113,14 @@ class UserService {
     return true;
   }
 
-  async resetPassword(userId, token, password) {
+  async resetPassword(userId, token, password, passwordConfirm) {
     const verificationResult = await this.verifyResetLink(userId, token);
 
     if (verificationResult) {
+      if (password !== passwordConfirm) {
+        throw ApiError.badRequest("Password doens't match.");
+      }
+
       const user = await User.findById(userId);
       const activationToken = await Token.findOne({ userId });
       const userPasswords = await UserPasswords.findOne({ userId: user._id });

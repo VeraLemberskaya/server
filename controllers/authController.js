@@ -5,14 +5,31 @@ class AuthController {
     try {
       const { email, name, surname, password } = req.body;
 
-      const user = await authService.registration({
+      const result = await authService.registration({
         email,
         name,
         surname,
         password,
       });
 
-      return res.json(user);
+      if (result) {
+        return res
+          .status(200)
+          .send(`Activation link was send on email ${email}`);
+      }
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  async activate(req, res, next) {
+    try {
+      const { userId, token } = req.params;
+      const result = await authService.activate(userId, token);
+
+      if (result) {
+        return res.status(200).send("User was successfully activated.");
+      }
     } catch (e) {
       next(e);
     }
@@ -22,9 +39,15 @@ class AuthController {
     try {
       const { email, password } = req.body;
 
-      const userData = await authService.login(email, password);
+      const result = await authService.login(email, password);
 
-      return res.json(userData);
+      if (typeof result === "boolean" && result) {
+        return res
+          .status(200)
+          .send(`Activation link was send on email ${email}`);
+      }
+
+      return res.json(result);
     } catch (e) {
       next(e);
     }

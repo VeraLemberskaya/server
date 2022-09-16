@@ -51,9 +51,7 @@ class UserController {
       const result = await userService.verifyResetLink(userId, token);
 
       if (result) {
-        res.redirect(
-          `${process.env.CLIENT_URL}/reset-password/${userId}/${token}`
-        );
+        res.status(200).send("Email verified successfully.");
       }
     } catch (e) {
       next(e);
@@ -63,9 +61,14 @@ class UserController {
   async resetPassword(req, res, next) {
     try {
       const { userId, token } = req.params;
-      const { password } = req.body;
+      const { password, passwordConfirm } = req.body;
 
-      const result = await userService.resetPassword(userId, token, password);
+      const result = await userService.resetPassword(
+        userId,
+        token,
+        password,
+        passwordConfirm
+      );
 
       if (result) {
         res.status(200).send("Password reset successfully done.");

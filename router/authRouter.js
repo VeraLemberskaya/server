@@ -15,4 +15,6 @@ router.post(
 
 router.post("/login", authController.login);
 
+router.get("/activate/:userId/:token", authController.activate);
+
 export default router;

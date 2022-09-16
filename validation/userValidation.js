@@ -37,7 +37,10 @@ class UserValidator {
     return [userValidationRules().email];
   }
   resetPassword() {
-    return [userValidationRules().password];
+    return [
+      userValidationRules().password,
+      userValidationRules("passwordConfirm").password,
+    ];
   }
 }
 
