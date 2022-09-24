@@ -11,7 +11,7 @@ import tokenService from "./tokenService.js";
 import mailService from "./mailService.js";
 
 class AuthService {
-  async registration({ name, surname, email, password }) {
+  async register({ name, surname, email, password }) {
     const candidate = await User.exists({ email });
     if (candidate) {
       throw ApiError.badRequest(`User with email ${email} already exists.`);
@@ -76,7 +76,7 @@ class AuthService {
   async login(email, password) {
     const user = await User.findOne({ email }).populate("role", "-_id");
     if (!user) {
-      throw new ApiError.badRequest(`User with email ${email} doesn't exist.`);
+      throw ApiError.badRequest(`User with email ${email} doesn't exist.`);
     }
 
     const validPassword = bcrypt.compareSync(password, user.password);
@@ -106,9 +106,32 @@ class AuthService {
     }
 
     const userDto = new UserDto(user);
-    const token = tokenService.generateAccessToken(user._id, user.role);
+    const tokens = tokenService.generateTokens(user._id, user.role);
 
-    return { token, user: userDto };
+    return { ...tokens, user: userDto };
+  }
+
+  async refresh(refreshToken) {
+    if (!refreshToken) {
+      throw ApiError.unauthorized();
+    }
+
+    const userData = tokenService.validateRefreshToken(refreshToken);
+
+    if (!userData) {
+      throw ApiError.forbidden();
+    }
+
+    const user = await User.findById(userData.id);
+
+    if (!user) {
+      throw ApiError.unauthorized();
+    }
+
+    const userDto = new UserDto(user);
+    const tokens = tokenService.generateTokens(user._id, user.role);
+
+    return { ...tokens, user: userDto };
   }
 }
 

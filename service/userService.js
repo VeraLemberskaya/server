@@ -113,14 +113,10 @@ class UserService {
     return true;
   }
 
-  async resetPassword(userId, token, password, passwordConfirm) {
+  async resetPassword(userId, token, password) {
     const verificationResult = await this.verifyResetLink(userId, token);
 
     if (verificationResult) {
-      if (password !== passwordConfirm) {
-        throw ApiError.badRequest("Password doens't match.");
-      }
-
       const user = await User.findById(userId);
       const activationToken = await Token.findOne({ userId });
       const userPasswords = await UserPasswords.findOne({ userId: user._id });

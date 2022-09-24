@@ -37,7 +37,9 @@ class UserController {
       const result = await userService.forgotPassword(email);
 
       if (result) {
-        res.status(200).send(`Activation link was send on email ${email}`);
+        res.status(200).json({
+          message: "Activation link was send on the email",
+        });
       }
     } catch (e) {
       next(e);
@@ -51,7 +53,9 @@ class UserController {
       const result = await userService.verifyResetLink(userId, token);
 
       if (result) {
-        res.status(200).send("Email verified successfully.");
+        res.status(200).json({
+          message: "Email verified successfully.",
+        });
       }
     } catch (e) {
       next(e);
@@ -71,7 +75,9 @@ class UserController {
       );
 
       if (result) {
-        res.status(200).send("Password reset successfully done.");
+        res.status(200).json({
+          message: "Password reset successfully done.",
+        });
       }
     } catch (e) {
       next(e);

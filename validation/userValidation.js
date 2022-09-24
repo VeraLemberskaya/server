@@ -39,7 +39,11 @@ class UserValidator {
   resetPassword() {
     return [
       userValidationRules().password,
-      userValidationRules("passwordConfirm").password,
+      userValidationRules("passwordConfirm")
+        .password.custom((value, { req }) =>
+          value !== req.body.password ? false : true
+        )
+        .withMessage("Password doensn't match."),
     ];
   }
 }
