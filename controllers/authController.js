@@ -45,10 +45,9 @@ class AuthController {
       const result = await authService.login(email, password);
 
       if (typeof result === "boolean" && result) {
-        throw ApiError.badRequest({
-          message:
-            "Email is not verified. Activation link was send to the email.",
-        });
+        throw ApiError.badRequest(
+          "Email is not verified. Activation link was send to the email."
+        );
       }
 
       const { accessToken, refreshToken, user } = result;

@@ -25,12 +25,12 @@ class UserService {
     return userDto;
   }
 
-  async changePassword(id, password, newPassword) {
+  async changePassword(id, oldPassword, newPassword) {
     const user = await User.findById(id);
     if (!user) {
       throw ApiError.badRequest(`User with id ${id} doesn't exist.`);
     }
-    const validPassword = bcrypt.compareSync(password, user.password);
+    const validPassword = bcrypt.compareSync(oldPassword, user.password);
 
     if (!validPassword) {
       throw ApiError.badRequest("Password is not correct.");
@@ -70,7 +70,7 @@ class UserService {
     const user = await User.findOne({ email });
 
     if (!user) {
-      throw ApiError.badRequest(`User with email ${email} doesn't exist.`);
+      throw ApiError.badRequest(`User with such email doesn't exist.`);
     }
 
     let token = await Token.findOne({ userId: user._id });
@@ -82,7 +82,7 @@ class UserService {
       });
     }
 
-    const link = `${process.env.BASE_URL}/users/reset-password/${user._id}/${token.token}`;
+    const link = `${process.env.BASE_URL}/user/reset-password/${user._id}/${token.token}`;
 
     await mailService.sendActivationMail(
       user.email,
@@ -90,7 +90,7 @@ class UserService {
       link
     );
 
-    token.save();
+    await token.save();
 
     return true;
   }

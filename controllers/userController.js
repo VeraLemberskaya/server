@@ -16,15 +16,18 @@ class UserController {
 
   async changePassword(req, res, next) {
     try {
-      const { password, newPassword } = req.body;
+      const { oldPassword, password } = req.body;
 
       const result = await userService.changePassword(
         req.userData.id,
-        password,
-        newPassword
+        oldPassword,
+        password
       );
-
-      return res.status(200).send(result);
+      if (result) {
+        return res.status(200).json({
+          message: "Password has been successfully updated.",
+        });
+      }
     } catch (e) {
       next(e);
     }
@@ -38,7 +41,7 @@ class UserController {
 
       if (result) {
         res.status(200).json({
-          message: "Activation link was send on the email",
+          message: "Reset link was send to the email",
         });
       }
     } catch (e) {
@@ -65,14 +68,9 @@ class UserController {
   async resetPassword(req, res, next) {
     try {
       const { userId, token } = req.params;
-      const { password, passwordConfirm } = req.body;
+      const { password } = req.body;
 
-      const result = await userService.resetPassword(
-        userId,
-        token,
-        password,
-        passwordConfirm
-      );
+      const result = await userService.resetPassword(userId, token, password);
 
       if (result) {
         res.status(200).json({

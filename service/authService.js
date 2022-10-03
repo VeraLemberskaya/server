@@ -14,7 +14,7 @@ class AuthService {
   async register({ name, surname, email, password }) {
     const candidate = await User.exists({ email });
     if (candidate) {
-      throw ApiError.badRequest(`User with email ${email} already exists.`);
+      throw ApiError.badRequest(`User with such email already exists.`);
     }
 
     const hashPassword = await bcrypt.hash(password, 5);
@@ -32,7 +32,7 @@ class AuthService {
       userId: user._id,
       activationToken: nanoid(64),
     });
-    const link = `${process.env.BASE_URL}/auth/${user._id}/${activationToken.activationToken}`;
+    const link = `${process.env.BASE_URL}/auth/activate/${user._id}/${activationToken.activationToken}`;
 
     mailService.sendActivationMail(
       user.email,
@@ -76,7 +76,7 @@ class AuthService {
   async login(email, password) {
     const user = await User.findOne({ email }).populate("role", "-_id");
     if (!user) {
-      throw ApiError.badRequest(`User with email ${email} doesn't exist.`);
+      throw ApiError.badRequest(`User with such email doesn't exist.`);
     }
 
     const validPassword = bcrypt.compareSync(password, user.password);
@@ -119,10 +119,10 @@ class AuthService {
     const userData = tokenService.validateRefreshToken(refreshToken);
 
     if (!userData) {
-      throw ApiError.forbidden();
+      throw ApiError.unauthorized();
     }
 
-    const user = await User.findById(userData.id);
+    const user = await User.findById(userData.id).populate("role", "-_id");
 
     if (!user) {
       throw ApiError.unauthorized();
