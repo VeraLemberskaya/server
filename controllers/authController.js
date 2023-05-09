@@ -40,9 +40,9 @@ class AuthController {
 
   async login(req, res, next) {
     try {
-      const { email, password } = req.body;
+      const { email, password, persist } = req.body;
 
-      const result = await authService.login(email, password);
+      const result = await authService.login(email, password, persist);
 
       if (typeof result === "boolean" && result) {
         throw ApiError.badRequest(
@@ -69,7 +69,7 @@ class AuthController {
       if (!cookies?.token) res.sendStatus(204);
       res.clearCookie("token");
       return res.status(200).json({
-        message: "Cookie cleared.",
+        message: "Cookie are cleared.",
       });
     } catch (e) {
       next(e);
@@ -80,16 +80,26 @@ class AuthController {
     try {
       const { token } = req.cookies;
 
-      const { accessToken, refreshToken, user } = await authService.refresh(
-        token
-      );
+      const { accessToken, refreshToken } = await authService.refresh(token);
 
       res.cookie("token", refreshToken, {
         httpOnly: true,
         maxAge: 30 * 24 * 60 * 60 * 1000,
       });
 
-      return res.json({ accessToken, user });
+      return res.json({ accessToken });
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  async verifyToken(req, res, next) {
+    try {
+      if (req.userData) {
+        return res.status(200).json({
+          message: "Token is valid.",
+        });
+      }
     } catch (e) {
       next(e);
     }

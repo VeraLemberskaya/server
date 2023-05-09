@@ -1,0 +1,10 @@
+{
+  "questionCount": {
+    "options": [3, 5, 7, 10],
+    "selected": 5
+  },
+  "answerCount": {
+    "options": [3, 4, 5, 6],
+    "selected": 4
+  }
+}

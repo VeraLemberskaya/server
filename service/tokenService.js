@@ -6,7 +6,7 @@ const JWT_ACCSESS_SECRET_KEY = process.env.JWT_ACCESS_SECRET_KEY;
 const JWT_REFRESH_SECRET_KEY = process.env.JWT_REFRESH_SECRET_KEY;
 
 class TokenService {
-  generateTokens(id, role) {
+  generateTokens(id, role, { persist }) {
     const payload = {
       id,
       role,
@@ -16,7 +16,7 @@ class TokenService {
       expiresIn: "15m",
     });
     const refreshToken = jwt.sign(payload, JWT_REFRESH_SECRET_KEY, {
-      expiresIn: "7d",
+      expiresIn: persist ? "7d" : "1d",
     });
 
     return {

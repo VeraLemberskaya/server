@@ -73,7 +73,7 @@ class AuthService {
     return true;
   }
 
-  async login(email, password) {
+  async login(email, password, persist) {
     const user = await User.findOne({ email }).populate("role", "-_id");
     if (!user) {
       throw ApiError.badRequest(`User with such email doesn't exist.`);
@@ -105,8 +105,12 @@ class AuthService {
       return true;
     }
 
+    user.persist = persist;
+
     const userDto = new UserDto(user);
-    const tokens = tokenService.generateTokens(user._id, user.role);
+    const tokens = tokenService.generateTokens(user._id, user.role, {
+      persist,
+    });
 
     return { ...tokens, user: userDto };
   }
@@ -127,11 +131,11 @@ class AuthService {
     if (!user) {
       throw ApiError.unauthorized();
     }
+    const tokens = tokenService.generateTokens(user._id, user.role, {
+      persist: user.persist,
+    });
 
-    const userDto = new UserDto(user);
-    const tokens = tokenService.generateTokens(user._id, user.role);
-
-    return { ...tokens, user: userDto };
+    return tokens;
   }
 }
 

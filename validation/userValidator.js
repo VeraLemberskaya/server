@@ -1,4 +1,5 @@
 import Joi from "joi";
+
 import { validateRequestBody } from "./validateRequestBody.js";
 
 class UserValidator {

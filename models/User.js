@@ -7,6 +7,7 @@ const User = new Schema({
   password: { type: String, required: true },
   role: { type: Schema.Types.ObjectId, ref: "Role" },
   isActivated: { type: Boolean, required: true, default: false },
+  persist: { type: Boolean, default: false },
   versionKey: false,
 });
 
